@@ -30,11 +30,13 @@
                 console.log("Daten an Track-Buffer - done");
                 console.log(total_length);
             }
+            
             else {
                 getClusterData(data);
                 if (clusterBuffer.length > 1) {
                     broadcast(clusterBuffer.pop());
                 }
+                
             }
         });
     });
@@ -47,7 +49,7 @@
         console.log("Client connected");
         res.writeHead(200, {
             "Content-Type": "video/webm",
-            "Transfer-Encoding": "chunked"
+            "Transfer-Encoding": "chunked",
         });
         var client = new ebml.client(res)
         clients.push(client);
@@ -73,21 +75,13 @@
                 console.log("Head gesendet"+ headBuffer.length);
                 client.setFlag(1);
             }
-            else {
+           else {
                 console.log("sende daten");
                 client.getResponse().write(data);
             }
         });
     }
-    //Get Buffer lenght
-    function getLength(data) {
-        var count = 0;
-        for (var i = 0; i < data.length ; i++) {
-            if (data[i] != null)
-                count++;
-        }
-        return count;
-    }
+    
     //Check Data
     function checkDataForIdent(data) {
 
@@ -105,7 +99,7 @@
         });
         decoder.write(data);
     }
-    
+
     function getClusterData(data) {
 
         checkDataForIdent(data);
@@ -127,6 +121,7 @@
             temp_cluster_buffer = cluster.slice(cluster_lenght,cluster.length); //rest der Clusterdaten vewerten
             cluster = cluster.slice(0, cluster_lenght); // Cluster sparieren
             clusterBuffer.push(cluster); // CLuster auf Stack pushen
+            console.log("Cluster on Stack");
             cluster_found = false;
         }
     }

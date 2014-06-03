@@ -1,6 +1,4 @@
-﻿    //addapted from Mark Schmale
-
-var schema = {
+﻿var schema = {
     "80": {
         "desc": "Contains all possible strings to use for the chapter display.",
         "name": "ChapterDisplay",
@@ -713,14 +711,6 @@ var schema = {
         "def": "-",
         "type": "m"
     },
-    "ff": {
-        "desc": "Contain the BlockAdditional and some parameters.",
-        "name": "Lenght",
-        "mu": true,
-        "level": "4",
-        "def": "-",
-        "type": "m"
-    },
     "ee": {
         "desc": "An ID to identify the BlockAdditional level.",
         "name": "BlockAddID",
@@ -1361,6 +1351,22 @@ var schema = {
         "def": "-",
         "type": "u"
     },
+    "f0": {
+        "desc": "The relative position of the referenced block inside the cluster with 0 being the first possible position for an element inside that cluster.",
+        "name": "CueRelativePosition",
+        "mu": false,
+        "level": "4",
+        "def": "-",
+        "type": "u"
+    },
+    "b2": {
+        "desc": "The duration of the block according to the segment time base. If missing the track's DefaultDuration does not apply and no duration information is available in terms of the cues.",
+        "name": "CueDuration",
+        "mu": false,
+        "level": "4",
+        "def": "-",
+        "type": "u"
+    },
     "ea": {
         "desc": "The position of the Codec State corresponding to this Cue element. 0 means that the data is taken from the initial Track Entry.",
         "name": "CueCodecState",
@@ -1649,5 +1655,5 @@ var schema = {
         "def": "und",
         "type": "s"
     }
-}
-module.exports = schema
+};
+module.exports = schema;
