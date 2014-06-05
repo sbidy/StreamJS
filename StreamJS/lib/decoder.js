@@ -2,12 +2,6 @@
   , tools = require('./tools.js')
   , schema = require('./schema.js')
 
-
-
-EbmlDecoder.prototype.getTotalLenght = function () {
-    return this._total;
-};
-
 var STATE_TAG = 1,
     STATE_SIZE = 2,
     STATE_CONTENT = 3;
@@ -28,6 +22,10 @@ function EbmlDecoder(options) {
 }
 
 require('util').inherits(EbmlDecoder, Writable);
+
+EbmlDecoder.prototype.getTotalLenght = function () {
+    return this._total;
+};
 
 EbmlDecoder.prototype._write = function (chunk, enc, done) {
 
@@ -64,7 +62,7 @@ EbmlDecoder.prototype.readTag = function () {
     //console.log('parsing tag');
 
     if (this._cursor >= this._buffer.length) {
-        console.log('waiting for more data');
+        //console.log('waiting for more data');
         return false;
     }
 
@@ -72,7 +70,7 @@ EbmlDecoder.prototype.readTag = function () {
     var tag = tools.readVint(this._buffer, this._cursor);
 
     if (tag == null) {
-        console.log('waiting for more data');
+        //console.log('waiting for more data');
         return false;
     }
 
@@ -104,7 +102,7 @@ EbmlDecoder.prototype.readSize = function () {
     //console.log('parsing size for tag: ' + tagObj.tag.toString(16));
 
     if (this._cursor >= this._buffer.length) {
-        console.log('waiting for more data');
+        //console.log('waiting for more data');
         return false;
     }
 
@@ -112,7 +110,7 @@ EbmlDecoder.prototype.readSize = function () {
     var size = tools.readVint(this._buffer, this._cursor);
 
     if (size == null) {
-        console.log('waiting for more data');
+        //console.log('waiting for more data');
         return false;
     }
 
@@ -131,19 +129,19 @@ EbmlDecoder.prototype.readContent = function () {
 
     var tagObj = this._tag_stack[this._tag_stack.length - 1];
 
-    console.log('parsing content for tag: ' + tagObj.tag.toString(16));
+    //console.log('parsing content for tag: ' + tagObj.tag.toString(16));
 
     if (tagObj.type === 'm') {
-        console.log('content should be tags');
+        //console.log('content should be tags');
         this.emit(tagObj.name, tagObj);
         this._state = STATE_TAG;
         return true;
     }
 
     if (this._buffer.length < this._cursor + tagObj.dataSize) {
-        console.log('got: ' + this._buffer.length);
-        console.log('need: ' + (this._cursor + tagObj.dataSize));
-        console.log('waiting for more data');
+       // console.log('got: ' + this._buffer.length);
+       // console.log('need: ' + (this._cursor + tagObj.dataSize));
+       // console.log('waiting for more data');
         return false;
     }
 

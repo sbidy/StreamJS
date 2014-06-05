@@ -1,6 +1,5 @@
 ﻿//from Mark Schmale
 
-var log2 = 0.6931471805599453 // chosen by a fair dice roll... not
 var tools = {
     readVint: function (buffer, start) {
         start = start || 0;
@@ -9,19 +8,20 @@ var tools = {
                 break;
             }
         }
+        console.log("L: "+length);
         if (length > 8) {
-            throw new Error("Unrepresentable length: " + length + " " +
-                buffer.toString('hex', start, start + length));
+           console.log("Unrepresentable length: " + length + " " + buffer.toString('hex', start, start + length));
         }
         if (start + length > buffer.length) {
             return null;
         }
+  
         var value = buffer[start] & (1 << (8 - length)) - 1;
+     
         for (i = 1; i < length; i++) {
             if (i === 7) {
-                if (value >= Math.pow(2, 53 - 8) && buffer[start + 7] > 0) {
-                    throw new Error("Unrepresentable value: " +
-                        buffer.toString('hex', start, start + length));
+                if (value >= Math.pow(2, 53) && buffer[start + 7] > 0) {
+                    throw new Error("Unrepresentable value: "+ value+" " + buffer.toString('hex', start, start + length));
                 }
             }
             value *= Math.pow(2, 8);

@@ -2,7 +2,7 @@
     //get decoder ready
     var ebml = require("./lib/ebml.js");
 
-    //Client Array  --> Später Objekte mit Status !!
+    //Client Array -- typ Client
     var clients = [];
     //Buffer
     var headBuffer = null;
@@ -19,7 +19,7 @@
     //HTTP
     var streamServer = require("http").createServer(function (request, response) {
         console.log("Connected - http");
-
+        
         request.on("data", function (data) {
             
             if (headBuffer == null) headBuffer = new Buffer(0); //Workaround - concat can not added to null
@@ -32,11 +32,12 @@
             }
             
             else {
+                /*
                 getClusterData(data);
                 if (clusterBuffer.length > 1) {
-                    broadcast(clusterBuffer.pop());
-                }
-                
+                    broadcast(clusterBuffer[0]);
+                } */
+                broadcast(data);
             }
         });
     });
@@ -46,17 +47,22 @@
     //Outgoing
     var httpServer = require("http").createServer(function (req, res) {
 
-        console.log("Client connected");
+
         res.writeHead(200, {
             "Content-Type": "video/webm",
             "Transfer-Encoding": "chunked",
         });
-        var client = new ebml.client(res)
-        clients.push(client);
 
+         console.log("Client connected");
+         var client = new ebml.client(res);
+         clients.push(client);
+         client.setID(clients.indexOf(client));
+       
+                
         res.on('close', function () {
             console.log("Client disconnected");
-            clients.splice(clients.indexOf(client), 1);
+            clients = clients.splice(client.getID(), 1);
+            
         });
     });
     httpServer.listen("8084");
@@ -67,7 +73,8 @@
     //BroadCastfuntkion
     function broadcast(data) {
         clients.forEach(function (client) {
-
+            
+            console.log(client.getFlag());
             if (client.getFlag() == 0) {
                 temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
                 headBuffer = headBuffer.slice(0, total_length); //Head sperieren
@@ -99,9 +106,9 @@
         });
         decoder.write(data);
     }
-
+   
     function getClusterData(data) {
-
+        
         checkDataForIdent(data);
         var cluster = new Buffer(0);
         if (!cluster_found) {
