@@ -10,7 +10,8 @@ var tools = {
         }
         console.log("L: "+length);
         if (length > 8) {
-           console.log("Unrepresentable length: " + length + " " + buffer.toString('hex', start, start + length));
+            console.log("Unrepresentable length: " + length + " " + buffer.toString('hex', start, start + length));
+            //length = length - 1;
         }
         if (start + length > buffer.length) {
             return null;

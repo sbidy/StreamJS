@@ -68,7 +68,7 @@ EbmlDecoder.prototype.readTag = function () {
 
     var start = this._total;
     var tag = tools.readVint(this._buffer, this._cursor);
-
+ 
     if (tag == null) {
         //console.log('waiting for more data');
         return false;
@@ -90,7 +90,7 @@ EbmlDecoder.prototype.readTag = function () {
     };
 
     this._tag_stack.push(tagObj);
-    //console.log('read tag: ' + tagStr);
+    console.log('read tag: ' + tagStr);
 
     return true;
 };

@@ -6,7 +6,7 @@
     var clients = [];
     //Buffer
     var headBuffer = null;
-    var clusterBuffer = [];
+    var clusterBuffer = null;
     var temp_cluster_buffer = new Buffer(0);
     //Flags
     var cluster_found = false;
@@ -28,16 +28,17 @@
                 checkDataForIdent(data);
                 headBuffer = Buffer.concat([headBuffer, data]);
                 console.log("Daten an Track-Buffer - done");
-                console.log(total_length);
+                temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
+                headBuffer = headBuffer.slice(0, total_length); //Head sperieren
             }
             
             else {
-                /*
                 getClusterData(data);
-                if (clusterBuffer.length > 1) {
-                    broadcast(clusterBuffer[0]);
-                } */
-                broadcast(data);
+                if (clusterBuffer.length) {
+                    broadcast(clusterBuffer);
+                    console.log("Data send " + clusterBuffer.length);
+                }
+                //broadcast(data);
             }
         });
     });
@@ -61,8 +62,8 @@
                 
         res.on('close', function () {
             console.log("Client disconnected");
-            clients = clients.splice(client.getID(), 1);
-            
+            clients.splice(client.getID(), 1);
+            client.setFlag(0);
         });
     });
     httpServer.listen("8084");
@@ -74,16 +75,13 @@
     function broadcast(data) {
         clients.forEach(function (client) {
             
-            console.log(client.getFlag());
+            console.log(total_length);
             if (client.getFlag() == 0) {
-                temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
-                headBuffer = headBuffer.slice(0, total_length); //Head sperieren
                 client.getResponse().write(headBuffer); //Head rausschreiben
                 console.log("Head gesendet"+ headBuffer.length);
                 client.setFlag(1);
             }
            else {
-                console.log("sende daten");
                 client.getResponse().write(data);
             }
         });
@@ -122,12 +120,11 @@
                 cluster = Buffer.concat([cluster, data]);
                 console.log("Datan an Clusterbuffer " + cluster.length);
             }
-            
         }
         else {
             temp_cluster_buffer = cluster.slice(cluster_lenght,cluster.length); //rest der Clusterdaten vewerten
             cluster = cluster.slice(0, cluster_lenght); // Cluster sparieren
-            clusterBuffer.push(cluster); // CLuster auf Stack pushen
+            clusterBuffer = cluster; // CLuster auf Stack pushen
             console.log("Cluster on Stack");
             cluster_found = false;
         }
