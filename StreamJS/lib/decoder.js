@@ -90,7 +90,7 @@ EbmlDecoder.prototype.readTag = function () {
     };
 
     this._tag_stack.push(tagObj);
-    console.log('read tag: ' + tagStr);
+    //console.log('read tag: ' + tagStr);
 
     return true;
 };

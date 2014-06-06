@@ -8,7 +8,6 @@ var tools = {
                 break;
             }
         }
-        console.log("L: "+length);
         if (length > 8) {
             console.log("Unrepresentable length: " + length + " " + buffer.toString('hex', start, start + length));
             //length = length - 1;

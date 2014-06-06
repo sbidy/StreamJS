@@ -6,7 +6,7 @@
     var clients = [];
     //Buffer
     var headBuffer = null;
-    var clusterBuffer = null;
+    var clusterBuffer = [];
     var temp_cluster_buffer = new Buffer(0);
     //Flags
     var cluster_found = false;
@@ -35,8 +35,9 @@
             else {
                 getClusterData(data);
                 if (clusterBuffer.length) {
-                    broadcast(clusterBuffer);
-                    console.log("Data send " + clusterBuffer.length);
+                    broadcast(clusterBuffer[0]);
+                    console.log("Data send " + clusterBuffer[0].length);
+                    clusterBuffer.splice(0, 1);
                 }
                 //broadcast(data);
             }
@@ -83,6 +84,7 @@
             }
            else {
                 client.getResponse().write(data);
+
             }
         });
     }
@@ -110,22 +112,15 @@
         checkDataForIdent(data);
         var cluster = new Buffer(0);
         if (!cluster_found) {
-
-            if (temp_cluster_buffer.length > 0) {
-                cluster = Buffer.concat([cluster,temp_cluster_buffer]);
-                temp_cluster_buffer = new Buffer(0);
-                console.log("REST-Datan an Clusterbuffer " + cluster.length);
-            }
-            else {
-                cluster = Buffer.concat([cluster, data]);
-                console.log("Datan an Clusterbuffer " + cluster.length);
-            }
+                clusterBuffer.push(Buffer.concat([clusterBuffer, data]));
+                console.log("Datan an Clusterbuffer " + clusterBuffer.length);
         }
         else {
-            temp_cluster_buffer = cluster.slice(cluster_lenght,cluster.length); //rest der Clusterdaten vewerten
+           /* temp_cluster_buffer = clusterBuffer.slice(clusterBuffer.lenghtdata.length); //rest der Clusterdaten vewerten
             cluster = cluster.slice(0, cluster_lenght); // Cluster sparieren
-            clusterBuffer = cluster; // CLuster auf Stack pushen
-            console.log("Cluster on Stack");
+            clusterBuffer = Buffer.concat([clusterBuffer,cluster]); // CLuster auf Stack pushen
+            console.log("Cluster on Stack");*/
+            clusterBuffer = new Buffer(0);
             cluster_found = false;
         }
     }

@@ -6,7 +6,6 @@ var ID = 0;
 function Client(res) {
     response = res;
 }
-
 Client.prototype.setFlag = function (value) {
     flag = value;
 };
