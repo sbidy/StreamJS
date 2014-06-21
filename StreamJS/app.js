@@ -29,7 +29,7 @@
                 headBuffer = Buffer.concat([headBuffer, data]);
                 console.log("Daten an Track-Buffer - done");
                 temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
-                headBuffer = headBuffer.slice(0, total_length); //Head sperieren
+                headBuffer = headBuffer.slice(0, total_length); //Head separieren
             }
             
             else {
