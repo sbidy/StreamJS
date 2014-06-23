@@ -67,19 +67,24 @@ EbmlDecoder.prototype.readTag = function () {
     }
 
     var start = this._total;
+    //Get the complete tag
     var tag = tools.readVint(this._buffer, this._cursor);
  
+    //retrurn if tag cant detected
     if (tag == null) {
         //console.log('waiting for more data');
         return false;
     }
 
+    //get the tag in hex
     var tagStr = this._buffer.toString('hex', this._cursor, this._cursor + tag.length);
 
+    //set global vars
     this._cursor += tag.length;
     this._total += tag.length;
     this._state = STATE_SIZE;
 
+    //generate tag Object with lookup in schema database (schema.js)
     tagObj = {
         tag: tag.value,
         tagStr: tagStr,
@@ -89,6 +94,7 @@ EbmlDecoder.prototype.readTag = function () {
         end: start + tag.length
     };
 
+    //push the tag object to the tag_stack
     this._tag_stack.push(tagObj);
     //console.log('read tag: ' + tagStr);
 

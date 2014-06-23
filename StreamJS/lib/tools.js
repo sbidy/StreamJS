@@ -1,4 +1,8 @@
 ﻿//from Mark Schmale
+// edited
+
+
+    //todo --> Doku
 
 var tools = {
     readVint: function (buffer, start) {

@@ -1,4 +1,6 @@
-﻿var schema = {
+﻿//schema database for all EBML-Tag within a matroska container
+
+var schema = {
     "80": {
         "desc": "Contains all possible strings to use for the chapter display.",
         "name": "ChapterDisplay",

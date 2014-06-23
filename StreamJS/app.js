@@ -46,13 +46,13 @@
     streamServer.listen("8082");
 
 
-    //Outgoing
+    //Outgoing http server for broadcast
     var httpServer = require("http").createServer(function (req, res) {
 
-
+        //
         res.writeHead(200, {
-            "Content-Type": "video/webm",
-            "Transfer-Encoding": "chunked",
+            "Content-Type": "video/webm", //set the typ
+            "Transfer-Encoding": "chunked", //not needed only for documetation- default
         });
 
          console.log("Client connected");
@@ -60,10 +60,10 @@
          clients.push(client);
          client.setID(clients.indexOf(client));
        
-                
+        //delete client if connection is close
         res.on('close', function () {
             console.log("Client disconnected");
-            clients.splice(client.getID(), 1);
+            clients.splice(client.getID(), 1); //get the client ID
             client.setFlag(0);
         });
     });
@@ -72,19 +72,18 @@
     console.log("in -> HTTP: 8082 /// out <- HTTP: 8084");
 
 
-    //BroadCastfuntkion
+    //BroadCastfuntcion
     function broadcast(data) {
         clients.forEach(function (client) {
             
             console.log(total_length);
             if (client.getFlag() == 0) {
-                client.getResponse().write(headBuffer); //Head rausschreiben
-                console.log("Head gesendet"+ headBuffer.length);
+                client.getResponse().write(headBuffer); //broadcast the header to the client
+                console.log("Head sent"+ headBuffer.length);
                 client.setFlag(1);
             }
            else {
-                client.getResponse().write(data);
-
+                client.getResponse().write(data); //write the normal data to the client
             }
         });
     }
@@ -92,18 +91,21 @@
     //Check Data
     function checkDataForIdent(data) {
 
-        var decoder = new ebml.decoder(); //Kann noch raus
+        var decoder = new ebml.decoder(); //init the decoder.js
 
+        //Event if Tacks-Element end reached
         decoder.on('Tracks:end', function (data) {
             track_found = true;
             total_length = decoder.getTotalLenght();
             return;
         });
+        //event if Cluster-Element end reached
         decoder.on('Cluster:end', function (data) {
             cluster_found = true;
             cluster_lenght = data.taglang;
             return;
         });
+        //write data to the decoder.write function
         decoder.write(data);
     }
    
@@ -116,6 +118,7 @@
                 console.log("Datan an Clusterbuffer " + clusterBuffer.length);
         }
         else {
+            //TODO
            /* temp_cluster_buffer = clusterBuffer.slice(clusterBuffer.lenghtdata.length); //rest der Clusterdaten vewerten
             cluster = cluster.slice(0, cluster_lenght); // Cluster sparieren
             clusterBuffer = Buffer.concat([clusterBuffer,cluster]); // CLuster auf Stack pushen
