@@ -49,7 +49,7 @@ EbmlDecoder.prototype._write = function (chunk, enc, done) {
 
     done();
 };
-
+//for 
 EbmlDecoder.prototype.getSchemaInfo = function (tagStr) {
     return this._schema[tagStr] || {
         "type": "unknown",

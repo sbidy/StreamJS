@@ -7,6 +7,7 @@
     //Buffer
     var headBuffer = null;
     var clusterBuffer = [];
+    var cluster = new Buffer(0);
     var temp_cluster_buffer = new Buffer(0);
     //Flags
     var cluster_found = false;
@@ -28,15 +29,16 @@
                 checkDataForIdent(data);
                 headBuffer = Buffer.concat([headBuffer, data]);
                 console.log("Daten an Track-Buffer - done");
-                temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
-                headBuffer = headBuffer.slice(0, total_length); //Head separieren
+                //temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
+                //headBuffer = headBuffer.slice(0, total_length); //Head separieren
             }
             
             else {
+                
                 getClusterData(data);
-                if (clusterBuffer.length) {
+                if (clusterBuffer.length  && clients.length) {
                     broadcast(clusterBuffer[0]);
-                    console.log("Data send " + clusterBuffer[0].length);
+                    console.log("Data sent " + clusterBuffer[0].length);
                     clusterBuffer.splice(0, 1);
                 }
                 //broadcast(data);
@@ -76,7 +78,7 @@
     function broadcast(data) {
         clients.forEach(function (client) {
             
-            console.log(total_length);
+            //console.log(total_length);
             if (client.getFlag() == 0) {
                 client.getResponse().write(headBuffer); //broadcast the header to the client
                 console.log("Head sent"+ headBuffer.length);
@@ -102,7 +104,7 @@
         //event if Cluster-Element end reached
         decoder.on('Cluster:end', function (data) {
             cluster_found = true;
-            cluster_lenght = data.taglang;
+            cluster_lenght = data.end;
             return;
         });
         //write data to the decoder.write function
@@ -112,18 +114,21 @@
     function getClusterData(data) {
         
         checkDataForIdent(data);
-        var cluster = new Buffer(0);
-        if (!cluster_found) {
-                clusterBuffer.push(Buffer.concat([clusterBuffer, data]));
-                console.log("Datan an Clusterbuffer " + clusterBuffer.length);
+
+        if (cluster_found) {
+
+            console.log("Cluster: " + cluster.length);
+            temp_cluster_buffer = cluster.slice(cluster_lenght, cluster.length);
+            cluster = cluster.slice(0, cluster_lenght);
+            clusterBuffer.push(cluster);
+            console.log("Datan an Clusterbuffer " + clusterBuffer.length);
+            cluster = temp_cluster_buffer;
+            cluster_found = false;
         }
         else {
-            //TODO
-           /* temp_cluster_buffer = clusterBuffer.slice(clusterBuffer.lenghtdata.length); //rest der Clusterdaten vewerten
-            cluster = cluster.slice(0, cluster_lenght); // Cluster sparieren
-            clusterBuffer = Buffer.concat([clusterBuffer,cluster]); // CLuster auf Stack pushen
-            console.log("Cluster on Stack");*/
-            clusterBuffer = new Buffer(0);
-            cluster_found = false;
+            //temp_cluster_buffer = cluster.slice(clusterBuffer.lenghtdata.length);
+            cluster = Buffer.concat([cluster, data]);
+            console.log("Cluster - : " + cluster.length);
+
         }
     }

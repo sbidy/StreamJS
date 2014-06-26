@@ -1,25 +1,27 @@
 ﻿//from Mark Schmale
 // edited
 
-
-    //todo --> Doku
-
 var tools = {
     readVint: function (buffer, start) {
+        //init with 0 if not defined
         start = start || 0;
+
+        //iterate trought the buffer an check if data is 0 or 1, if 1 breaks
         for (var length = 1; length <= 8; length++) {
             if (buffer[start] >= Math.pow(2, 8 - length)) {
                 break;
             }
         }
+        //if the data length > 8 - can not be a tag
         if (length > 8) {
             console.log("Unrepresentable length: " + length + " " + buffer.toString('hex', start, start + length));
             //length = length - 1;
         }
+        //if the cursor is longer than the data
         if (start + length > buffer.length) {
             return null;
         }
-  
+        //
         var value = buffer[start] & (1 << (8 - length)) - 1;
      
         for (i = 1; i < length; i++) {
