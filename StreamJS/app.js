@@ -16,7 +16,8 @@
     //vars
     var total_length = 0;
     var cluster_lenght = 0;
-    var tmp = 0;
+    var id = 0;
+    var clinet = null;
 
     //Incomming
     //HTTP
@@ -79,9 +80,11 @@
 
          console.log("Client connected".green);
          var client = new ebml.client(res);
+         client.setFlag(0);
+         client.setID(id);
+         id++;
          clients.push(client);
-         client.setID(clients.indexOf(client));
-       
+         
         //delete client if connection is close
         res.on('close', function () {
             console.log("Client disconnected".red);
@@ -97,7 +100,9 @@
     //BroadCastfuntcion
     function broadcast(data) {
         clients.forEach(function (client) {
-            
+           
+            console.log(client.getFlag());
+            console.log(client.getID());
             //console.log(total_length);
             if (client.getFlag() == 0) {
                 client.getResponse().write(headBuffer); //broadcast the header to the client

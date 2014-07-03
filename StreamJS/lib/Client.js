@@ -1,25 +1,25 @@
-﻿var flag = 0;
+﻿var ID;
+var flag;
 var response;
-var ID = 0;
 
-    // Constructor
+// Constructor
 function Client(res) {
-    response = res;
+    this.response = res;
 }
 Client.prototype.setFlag = function (value) {
-    flag = value;
+    this.flag = value;
 };
 Client.prototype.setID = function (value) {
-    ID = value;
+    this.ID = value;
 };
 Client.prototype.getFlag = function () {
-    return flag;
+    return this.flag;
 };
 Client.prototype.getResponse = function () {
-    return response;
+    return this.response;
 };
 Client.prototype.getID = function () {
-    return ID;
+    return this.ID;
 };
 
 module.exports = Client;

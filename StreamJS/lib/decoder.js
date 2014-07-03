@@ -36,12 +36,15 @@ EbmlDecoder.prototype._write = function (chunk, enc, done) {
     }
 
     while (this._cursor < this._buffer.length) {
+        //read the tag infromation - if no tag break and wait for the next data
         if (this._state === STATE_TAG && !this.readTag()) {
             break;
         }
+        //read the size - if no size - wait for the next data
         if (this._state === STATE_SIZE && !this.readSize()) {
             break;
         }
+        //reads the content and emit the event for the event loops
         if (this._state === STATE_CONTENT && !this.readContent()) {
             break;
         }
@@ -51,6 +54,8 @@ EbmlDecoder.prototype._write = function (chunk, enc, done) {
 };
 //for 
 EbmlDecoder.prototype.getSchemaInfo = function (tagStr) {
+
+    //retrun the lookup infromations from shema.js - if no exist return "unknown"
     return this._schema[tagStr] || {
         "type": "unknown",
         "name": "unknown"
@@ -93,7 +98,7 @@ EbmlDecoder.prototype.readTag = function () {
         start: start,
         end: start + tag.length
     };
-    if (tagObj.tag != 35) { console.log(tagObj); }
+    //if (tagObj.tag != 35) { console.log(tagObj); }
     //push the tag object to the tag_stack
     this._tag_stack.push(tagObj);
     //console.log('read tag: ' + tagStr);
@@ -171,7 +176,6 @@ EbmlDecoder.prototype.readContent = function () {
         this.emit(topEle.name + ':end', topEle);
         this._tag_stack.pop();
     }
-
     //console.log('read data: ' + data.toString('hex'));
     return true;
 };

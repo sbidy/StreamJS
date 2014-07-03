@@ -1,5 +1,4 @@
-﻿//from Mark Schmale
-// edited
+﻿    //from Mark Schmale - https://github.com/themasch/node-ebml
 
 var tools = {
     readVint: function (buffer, start) {
@@ -26,6 +25,7 @@ var tools = {
      
         for (i = 1; i < length; i++) {
             if (i === 7) {
+                //if the vaule is over the int-size-limit
                 if (value >= Math.pow(2, 53) && buffer[start + 7] > 0) {
                     throw new Error("Unrepresentable value: "+ value+" " + buffer.toString('hex', start, start + length));
                 }
@@ -40,6 +40,8 @@ var tools = {
     },
 
     writeVint: function (value) {
+
+        //if 0 or over the 2^53 javascript int limit
         if (value < 0 || value > Math.pow(2, 53)) {
             throw new Error("Unrepresentable value: " + value);
         }
