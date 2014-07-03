@@ -93,7 +93,7 @@ EbmlDecoder.prototype.readTag = function () {
         start: start,
         end: start + tag.length
     };
-
+    if (tag != 35) console.log(tagObj);
     //push the tag object to the tag_stack
     this._tag_stack.push(tagObj);
     //console.log('read tag: ' + tagStr);
@@ -159,6 +159,7 @@ EbmlDecoder.prototype.readContent = function () {
 
     this._tag_stack.pop(); // remove the object from the stack
 
+    //call event
     tagObj.data = data;
     this.emit(tagObj.name, tagObj);
 

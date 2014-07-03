@@ -15,13 +15,14 @@
     //vars
     var total_length = 0;
     var cluster_lenght = 0;
+    var tmp = 0;
 
     //Incomming
     //HTTP
-    var streamServer = require("http").createServer(function (request, response) {
+    var streamServer = require("http").createServer(function (req, res) {
         console.log("Connected - http");
         
-        request.on("data", function (data) {
+        req.on("data", function (data) {
             
             if (headBuffer == null) headBuffer = new Buffer(0); //Workaround - concat can not added to null
             //Check if Meta is allready sending
@@ -43,6 +44,15 @@
                 }
                //broadcast(data);
             }
+        });
+
+        res.on('close', function () {
+            console.log("Stream-Client disconnected");
+            headBuffer = null;
+            clients = [];
+            cluster = new Buffer(0);
+            total_length = 0;
+            cluster_lenght = 0;
         });
     });
     streamServer.listen("8082");
@@ -103,21 +113,22 @@
         });
         //event if Cluster-Element end reached
         decoder.on('Cluster:end', function (data) {
-            cluster_found = true;
             //get the length of the cluster
-            cluster_lenght = (decoder.getTotalLenght()-total_length)-cluster_lenght;
+            cluster_lenght = data.end;
+            cluster_found = true;
             return;
         });
+
         //write data to the decoder.write function
         decoder.write(data);
     }
    
     function getClusterData(data) {
         
-        checkDataForIdent(data);
+        //checkDataForIdent(data);
 
-        if (cluster_found) {
-            console.log("Cluster end:" + cluster_lenght);
+        /*if (cluster_found) {
+            console.log("Cluster length:" + cluster_lenght);
             console.log("Clusterstack length: " + cluster.length);
             temp_cluster_buffer = cluster.slice(cluster_lenght, cluster.length);
             cluster = cluster.slice(0, cluster_lenght);
@@ -126,13 +137,18 @@
             cluster = temp_cluster_buffer;
             cluster_found = false;
         }
-        else {
+        else {*/
             //temp_cluster_buffer = cluster.slice(clusterBuffer.lenghtdata.length);
-            if (temp_cluster_buffer.length > 0) {
+            /*if (temp_cluster_buffer.length > 0) {
+                console.log("add rest to the cluster");
                 Buffer.concat([cluster, temp_cluster_buffer]);
-            }
-            cluster = Buffer.concat([cluster, data]);
-            console.log("Add data to cluster_buffer : " + cluster.length);
-
-        }
-    }
+            }*/
+            //cluster = Buffer.concat([cluster, data]);
+            
+            //temp_cluster_buffer = cluster.slice(cluster_lenght, cluster.length);
+            //cluster = cluster.slice(0, cluster_lenght);
+            clusterBuffer.push(data);
+            console.log("Add data to cluster_buffer : " + data.length);
+            console.log("Datan at cluster_buffer " + clusterBuffer.length);
+            cluster = 0;
+         }
