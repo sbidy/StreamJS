@@ -29,8 +29,8 @@
                 checkDataForIdent(data);
                 headBuffer = Buffer.concat([headBuffer, data]);
                 console.log("Daten an Track-Buffer - done");
-                //temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
-                //headBuffer = headBuffer.slice(0, total_length); //Head separieren
+                temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
+                headBuffer = headBuffer.slice(0, total_length); //Head separieren
             }
             
             else {
@@ -41,7 +41,7 @@
                     console.log("Data sent " + clusterBuffer[0].length);
                     clusterBuffer.splice(0, 1);
                 }
-                //broadcast(data);
+               //broadcast(data);
             }
         });
     });
@@ -104,7 +104,8 @@
         //event if Cluster-Element end reached
         decoder.on('Cluster:end', function (data) {
             cluster_found = true;
-            cluster_lenght = data.end;
+            //get the length of the cluster
+            cluster_lenght = (decoder.getTotalLenght()-total_length)-cluster_lenght;
             return;
         });
         //write data to the decoder.write function
@@ -116,19 +117,22 @@
         checkDataForIdent(data);
 
         if (cluster_found) {
-
-            console.log("Cluster: " + cluster.length);
+            console.log("Cluster end:" + cluster_lenght);
+            console.log("Clusterstack length: " + cluster.length);
             temp_cluster_buffer = cluster.slice(cluster_lenght, cluster.length);
             cluster = cluster.slice(0, cluster_lenght);
             clusterBuffer.push(cluster);
-            console.log("Datan an Clusterbuffer " + clusterBuffer.length);
+            console.log("Datan at cluster_buffer " + clusterBuffer.length);
             cluster = temp_cluster_buffer;
             cluster_found = false;
         }
         else {
             //temp_cluster_buffer = cluster.slice(clusterBuffer.lenghtdata.length);
+            if (temp_cluster_buffer.length > 0) {
+                Buffer.concat([cluster, temp_cluster_buffer]);
+            }
             cluster = Buffer.concat([cluster, data]);
-            console.log("Cluster - : " + cluster.length);
+            console.log("Add data to cluster_buffer : " + cluster.length);
 
         }
     }
