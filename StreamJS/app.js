@@ -1,6 +1,7 @@
 ﻿
     //get decoder ready
     var ebml = require("./lib/ebml.js");
+    var colors = require("colors");
 
     //Client Array -- typ Client
     var clients = [];
@@ -64,7 +65,7 @@
             cluster_lenght = 0;
         });
     });
-    streamServer.listen("8082");
+    streamServer.listen("8081");
 
 
     //Outgoing http server for broadcast
@@ -76,19 +77,19 @@
             "Transfer-Encoding": "chunked", //not needed only for documetation- default
         });
 
-         console.log("Client connected");
+         console.log("Client connected".green);
          var client = new ebml.client(res);
          clients.push(client);
          client.setID(clients.indexOf(client));
        
         //delete client if connection is close
         res.on('close', function () {
-            console.log("Client disconnected");
+            console.log("Client disconnected".red);
             clients.splice(client.getID(), 1); //get the client ID
             client.setFlag(0);
         });
     });
-    httpServer.listen("8084");
+    httpServer.listen("8080");
 
     console.log("in -> HTTP: 8082 /// out <- HTTP: 8084");
 
@@ -100,7 +101,7 @@
             //console.log(total_length);
             if (client.getFlag() == 0) {
                 client.getResponse().write(headBuffer); //broadcast the header to the client
-                console.log("Head sent"+ headBuffer.length);
+                console.log("Head sent".yellow + headBuffer.length);
                 client.setFlag(1);
             }
            else {
@@ -157,7 +158,7 @@
             //temp_cluster_buffer = cluster.slice(cluster_lenght, cluster.length);
             //cluster = cluster.slice(0, cluster_lenght);
             clusterBuffer.push(data);
-            console.log("Add data to cluster_buffer : " + data.length);
-            console.log("Datan at cluster_buffer " + clusterBuffer.length);
+            console.log("Add data to cluster_buffer : ".yellow + data.length);
+            console.log("Datan at cluster_buffer ".yellow + clusterBuffer.length);
             cluster = 0;
          }
