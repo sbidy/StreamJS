@@ -49,7 +49,16 @@
         res.on('close', function () {
             console.log("Stream-Client disconnected");
             headBuffer = null;
-            clients = [];
+            for(var i=0;i<clusterBuffer.length;i++)
+            {
+                console.log("Pusch from stack to client - on stack:" + clusterBuffer.length);
+                broadcast(clusterBuffer[i]);
+                if (i == clusterBuffer.length) {
+                    clients = [];
+                    clusterBuffer = [];
+                }
+            }
+            
             cluster = new Buffer(0);
             total_length = 0;
             cluster_lenght = 0;
@@ -125,7 +134,7 @@
    
     function getClusterData(data) {
         
-        //checkDataForIdent(data);
+        checkDataForIdent(data);
 
         /*if (cluster_found) {
             console.log("Cluster length:" + cluster_lenght);
