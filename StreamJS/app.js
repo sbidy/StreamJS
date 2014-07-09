@@ -22,7 +22,7 @@
     //Incomming
     //HTTP
     var streamServer = require("http").createServer(function (req, res) {
-        console.log("Connected - http");
+        console.log("Stream-Connected - http".green);
         
         req.on("data", function (data) {
             
@@ -31,29 +31,28 @@
             if (!track_found) {
                 checkDataForIdent(data);
                 headBuffer = Buffer.concat([headBuffer, data]);
-                console.log("Daten an Track-Buffer - done");
+                console.log("Daten an Track-Buffer - done".green);
                 temp_cluster_buffer = headBuffer.slice(total_length, headBuffer.length); //Rest der Daten verwerten
                 headBuffer = headBuffer.slice(0, total_length); //Head separieren
             }
             
             else {
-                
                 getClusterData(data);
-                if (clusterBuffer.length  && clients.length) {
+                //sentData();
+                if (clusterBuffer.length && clients.length) {
                     broadcast(clusterBuffer[0]);
-                    console.log("Data sent " + clusterBuffer[0].length);
+                    console.log("Data sent ".magenta + clusterBuffer[0].length + " byte");
                     clusterBuffer.splice(0, 1);
                 }
-               //broadcast(data);
             }
         });
 
         res.on('close', function () {
-            console.log("Stream-Client disconnected");
+            console.log("Stream-Client disconnected".red);
             headBuffer = null;
             for(var i=0;i<clusterBuffer.length;i++)
             {
-                console.log("Pusch from stack to client - on stack:" + clusterBuffer.length);
+                console.log("Pusch from stack to client - on stack:".blue + (clusterBuffer.length-i));
                 broadcast(clusterBuffer[i]);
                 if (i == clusterBuffer.length) {
                     clients = [];
@@ -96,17 +95,27 @@
 
     console.log("in -> HTTP: 8081 /// out <- HTTP: 8080");
 
+    function sentData() {
+        while (clients.length > 0) {
+            
+            if (clusterBuffer.length > 0) {
+                broadcast(clusterBuffer[0]);
+                console.log("Data sent ".magenta + clusterBuffer[0].length + " byte");
+                clusterBuffer.splice(0, 1);
+            }
+            else {
+                break;
+            }
+            //broadcast(data);
+        }
+    }
 
     //BroadCastfuntcion
     function broadcast(data) {
         clients.forEach(function (client) {
-           
-            console.log(client.getFlag());
-            console.log(client.getID());
-            //console.log(total_length);
             if (client.getFlag() == 0) {
                 client.getResponse().write(headBuffer); //broadcast the header to the client
-                console.log("Head sent".yellow + headBuffer.length);
+                console.log("Head sent".yellow + headBuffer.length + " byte");
                 client.setFlag(1);
             }
            else {
@@ -163,7 +172,7 @@
             //temp_cluster_buffer = cluster.slice(cluster_lenght, cluster.length);
             //cluster = cluster.slice(0, cluster_lenght);
             clusterBuffer.push(data);
-            console.log("Add data to cluster_buffer : ".yellow + data.length);
-            console.log("Datan at cluster_buffer ".yellow + clusterBuffer.length);
+            console.log("Add data to cluster_buffer : " + data.length + " byte");
+            console.log("Datan at cluster_buffer ".yellow + clusterBuffer.length + " byte");
             cluster = 0;
          }

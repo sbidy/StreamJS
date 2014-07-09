@@ -1,4 +1,4 @@
-﻿    //from Mark Schmale - https://github.com/themasch/node-ebml
+﻿//forked from Mark Schmale - https://github.com/themasch/node-ebml
 
 var tools = {
     readVint: function (buffer, start) {
@@ -26,6 +26,7 @@ var tools = {
         for (i = 1; i < length; i++) {
             if (i === 7) {
                 //if the vaule is over the int-size-limit
+                // pow(53) bugfix
                 if (value >= Math.pow(2, 53) && buffer[start + 7] > 0) {
                     throw new Error("Unrepresentable value: "+ value+" " + buffer.toString('hex', start, start + length));
                 }
