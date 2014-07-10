@@ -115,7 +115,7 @@
         clients.forEach(function (client) {
             if (client.getFlag() == 0) {
                 client.getResponse().write(headBuffer); //broadcast the header to the client
-                console.log("Head sent".yellow + headBuffer.length + " byte");
+                console.log("Head sent".yellow + headBuffer.length);
                 client.setFlag(1);
             }
            else {
