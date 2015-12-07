@@ -1,13 +1,8 @@
-StreamJS
+#StreamJS
 ========
 
-A node.js live video streaming server.
+A node.js live video streaming server with EBML/Matroska.
+Only a proof of concept for a implementaion from C++ to the functional JavaScript.
 
-Tech.:
-- Matroska
-- EBML
-- node.js
-
-Staus:
-working Alpha
+Little bit buggy but working :-)
 
